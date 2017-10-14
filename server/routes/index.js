@@ -10,7 +10,9 @@ var authHelper = require('../helpers/authHelper')
 
 // router.post('/signup', userController.registerNewUser)
 
-router.post('/signin', userController.setFBAccessToken, userController.loginUser)
+// router.post('/signin', userController.setFBAccessToken, userController.loginUser, userController.getUserFB)
+
+router.get('/signin', userController.setFBAccessToken, userController.loginUser, userController.getUserFB)
 
 // router.get('/', userController.setFBAccessToken, userController.getUser)
 

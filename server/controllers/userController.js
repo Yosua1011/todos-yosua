@@ -86,9 +86,9 @@ module.exports = {
 
     },
 
-    getUser: (req, res) => {
-        FB.api('/me', response => {
-          res.send(response)
-        })
-      }
+    getUserFB: (req,res) => {
+      FB.api('/me',{fields: ['id','name','email']}, response => {
+        res.send(response)
+      })
+    }
 }
