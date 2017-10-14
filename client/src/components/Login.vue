@@ -9,7 +9,6 @@
         <!-- FACEBOOK LOGIN AREA -->
         <button v-if="!isLogin" v-on:click="loginfb()" class="btn btn-info">Login with Facebook</button>
      </div>
-     <h2 v-if="!isLogin" class="text-center">To Continue please login </h2>
      <Todo v-if="isLogin" :login="isLogin"  :username="username" :userid="userid"></Todo>
      <!-- <Todo v-if="!isLogin":login="isLogin" :userid="userid"></Todo> -->
      <!-- TO DO AREA -->
