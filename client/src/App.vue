@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-    <div id="imgvue">
-      <img src="./assets/logo.png" width="10%">
-    </div>
     <router-view></router-view>
   </div>
 </template>
@@ -24,6 +21,6 @@ export default {
   text-align: center;
 }
 body {
-  background-image: url("../static/1.jpg");
+  background-image: url("../static/white.jpg");
 }
 </style>

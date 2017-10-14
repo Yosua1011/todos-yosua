@@ -4,12 +4,10 @@
         <div class="col-md-8 col-md-offset-2">
            <form class="form-horizontal">
               <fieldset>
-                 <button href="#" class="fb-login-button  center-block" @click="logoutfb()" name="button">logout</button>
+                 <button href="#" class="fb-login-button  center-block btn btn-warning" @click="logoutfb()" name="button">Log Out</button>
                  <legend style="color:silver; font-family: Comic Sans MS" class="text-center">
-                    <h2>Welcome : {{username}}</h2>
+                    <h2>Welcome</h2>
                  </legend>
-                 <!-- <legend>Legend</legend> -->
-                 <!-- <button type="button" name="button" @click="test()">test</button> -->
                  <div class="form-group">
                     <label for="inputDescription" class="col-lg-2 control-label" style="color:silver; font-size:24px; padding-bottom:0px;">DESCRIPTION</label><br>
                     <div class="col-lg-12">
@@ -52,24 +50,19 @@
                     </div>
                     <div class="col-lg-12">
                        <div class="radio" v-for="(item,index) in todo">
-                          <!-- <label> -->
-                          <input type="checkbox"  name="optionsRadios" id="optionsRadios1" v-model="item.complete" @change="updateTodo(item._id,item.complete,index)" style="text-center">
                           <div class="" style="color:gold;">
                              <strong>
                                 {{item.description}}, CATEGORY : {{item.categories}}
-                                <!-- <div class="text-center" style="size:90px"> -->
                                 <i class="fa fa-calendar"></i>
                                 {{item.date}}
-                                <!-- <p>{{item._id}}</p> -->
                              </strong>
                              <button type="submit" class="btn btn-danger" @click="deleteTodo(item._id,index)">
                              <i class="fa fa-trash-o icon"></i>
                              delete
                              </button>
-                             <!-- <p>{{login}}</p> -->
                           </div>
-                          <!-- </div> -->
-                          <!-- </label> -->
+                          STATUS:
+                          <input type="checkbox"  name="optionsRadios" id="optionsRadios1" v-model="item.complete" @change="updateTodo(item._id,item.complete,index)" style="text-center"> {{status}}
                        </div>
                     </div>
                  </div>
@@ -92,6 +85,7 @@ export default {
       complete: false,
       todo: [],
       username: null,
+      status: 'NOT DONE',
       categories: [
         {name: 'Personal'},
         {name: 'Work'},
@@ -117,8 +111,8 @@ export default {
   methods: {
     getData () {
       var self = this
-      axios.get(`http://localhost:3000/todo/${localStorage.userId}`).then(result => {
-      // axios.get(`http://35.197.157.222/todo/${localStorage.userId}`).then(result => {
+      // axios.get(`http://localhost:3000/todo`).then(result => {
+      axios.get(`http://35.198.226.10/todo`).then(result => {
         self.todo = result.data
         console.log(result.data)
         console.log(self.todo)
@@ -131,9 +125,10 @@ export default {
     addNew () {
       var self = this
       if (self.description === null || self.category === null || self.date === null) {
-        alert('Please fill of all your todo data')
+        this.showAlert('Please fill of all your todo data')
       } else {
-        axios.post('http://localhost:3000/todo', {
+        // axios.post('http://localhost:3000/todo', {
+        axios.post('http://35.198.226.10/todo', {
           description: self.description,
           categories: self.category,
           date: self.date,
@@ -142,34 +137,40 @@ export default {
         })
         .then(result => {
           self.todo.push(result.data)
-          alert('You add a todo list')
+          this.showAlert('You add a todo list')
         })
         .catch(err => {
           console.log(err)
-          alert('Error adding todo')
+          this.showAlert('Error adding todo')
         })
       }
     },
     updateTodo (idTodo, status, index) {
-      // var self = this
-      axios.put(`http://localhost:3000/todo/${idTodo}`, {
+      // axios.put(`http://localhost:3000/todo/${idTodo}`, {
+      axios.put(`http://35.198.226.10/todo/${idTodo}`, {
         complete: status
       })
       .then(result => {
-        alert('Your todo updated')
+        console.log('ini result ', result.data.complete)
+        if (result.data.complete === false) {
+          this.status = 'DONE'
+          this.showAlert('Your todo is done')
+        } else {
+          this.status = 'NOT DONE'
+          this.showAlert('Your todo is undone')
+        }
       })
     },
     deleteTodo (idTodo, index) {
-      // alert(this.login)
       var self = this
-      alert(idTodo)
-      axios.delete(`http://localhost:3000/todo/${idTodo}`)
+      // axios.delete(`http://localhost:3000/todo/${idTodo}`)
+      axios.delete(`http://35.198.226.10/todo/${idTodo}`)
       .then(result => {
         self.todo.splice(index, 1)
-        alert('Success delete your todo')
+        this.showAlert('Success delete your todo')
       })
       .catch(err => {
-        alert('Error delete your todo')
+        this.showAlert('Error delete your todo')
         console.log(err)
       })
     },
@@ -178,6 +179,34 @@ export default {
       localStorage.clear()
       self.isLogin = false
       this.$router.push('/')
+    },
+    showAlert (msg) {
+      // Use sweetalret2
+      this.$swal(`${msg}`)
+    },
+    editdata (data, index) {
+      var status = ''
+      if (data.complete === true) {
+        status = 'done'
+      } else {
+        status = 'undone'
+      }
+      var self = this
+      this.$http.put(`/todos/${data._id}`, {
+        check: status
+      }, {
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+      .then(response => {
+        console.log(self.todoslist[index])
+        self.todoslist[index].check = status
+        this.showAlert(`You just ${this.todoslist[index].check} this todo item`)
+      })
+      .catch(err => {
+        console.log(err)
+      })
     }
   }
 }

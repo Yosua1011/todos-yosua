@@ -4,11 +4,10 @@
         <h1><strong>{{msg}}</strong></h1>
         <!-- FB DATA AREA -->
         <legend v-if="isLogin" style="color:silver font-family: Comic Sans MS">
-           <h2>Welcome : {{username}}</h2>
+           <h2>Welcome</h2>
         </legend>
         <!-- FACEBOOK LOGIN AREA -->
-        <button v-if="isLogin" v-on:click="logoutfb()" class="btn btn-info">logout</button><br>
-        <button v-if="!isLogin" v-on:click="loginfb()">Continue with Facebook</button>
+        <button v-if="!isLogin" v-on:click="loginfb()" class="btn btn-info">Login with Facebook</button>
      </div>
      <h2 v-if="!isLogin" class="text-center">To Continue please login </h2>
      <Todo v-if="isLogin" :login="isLogin"  :username="username" :userid="userid"></Todo>
@@ -26,7 +25,7 @@ export default {
   name: 'login',
   data () {
     return {
-      msg: 'Welcome to Vue.js Todo App',
+      msg: `Welcome to Yosua's Todo App`,
       userid: null,
       username: null,
       isLogin: false
@@ -70,41 +69,36 @@ export default {
         if (response.status === 'connected') {
           localStorage.setItem('fb_access_token', response.authResponse.accessToken)
           this.testAPI()
+          this.$router.push('/todo')
         } else {
-          alert('Please login')
+          this.showAlert('Please login')
         }
       })
     },
     testAPI () {
       console.log('Welcome!  Fetching your information.... ')
-      alert('loginfb')
-      axios.get('http://localhost:3000/signin', {
-      // axios.get('http://35.197.157.222/login/fb', {
+      this.showAlert('You just login')
+      // axios.get('http://localhost:3000/signin', {
+      axios.get('http://35.198.226.10/signin', {
         headers: {fb_access_token: localStorage.getItem('fb_access_token')}
       })
-        .then(response => {
-          this.userid = response.data.id
-          console.log('data dari server', response.data)
-          this.username = response.data.name
-          localStorage.setItem('userId', this.userid)
-          localStorage.setItem('username', this.username)
-          this.usergue = localStorage.setItem('username', this.username)
-          this.isLogin = true
-          this.$router.push('/todo')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    logoutfb () {
-      var self = this
-      window.FB.logout(function (response) {
-        localStorage.clear()
-        self.isLogin = false
-        this.$router.push('/')
-        alert(this.username)
-        // location.reload()
+      .then(response => {
+        this.userid = response.data.id
+        console.log('data dari server', response.data)
+        this.username = response.data.name
+        localStorage.setItem('userId', this.userid)
+        localStorage.setItem('username', this.username)
+        this.usergue = localStorage.setItem('username', this.username)
+        this.isLogin = true
+        this.$router.push('/todo')
       })
+      .catch(err => {
+        console.log(err)
+      })
+    },
+    showAlert (msg) {
+      // Use sweetalret2
+      this.$swal(`${msg}`)
     }
   }
 }
